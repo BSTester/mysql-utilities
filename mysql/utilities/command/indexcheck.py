@@ -114,7 +114,7 @@ def check_index(src_val, table_args, options):
         db_source.init()
         tables = db_source.get_db_objects("TABLE")
         if not tables and verbosity >= 1:
-            print "# Warning: database %s does not exist. Skipping." % (db)
+            print("# Warning: database %s does not exist. Skipping." % (db))
         for table in tables:
             table_list.append("{0}.{1}".format(quote_with_backticks(db,
                                                                     sql_mode),
@@ -126,7 +126,7 @@ def check_index(src_val, table_args, options):
         raise UtilError("No tables to check.")
 
     if verbosity > 1:
-        print "# Checking indexes..."
+        print("# Checking indexes...")
     # Check indexes for each table in the list
     # pylint: disable=R0101
     for table_name in table_list:
@@ -143,7 +143,7 @@ def check_index(src_val, table_args, options):
         if exists:
             if not tbl.get_indexes():
                 if verbosity > 1 or report_indexes:
-                    print "# Table %s is not indexed." % (table_name)
+                    print("# Table %s is not indexed." % (table_name))
             else:
                 if show_indexes:
                     tbl.print_indexes(index_format, verbosity)
@@ -166,7 +166,7 @@ def check_index(src_val, table_args, options):
                     tbl.show_special_indexes(index_format, last_indexes)
 
         if verbosity > 1:
-            print "#"
+            print("#")
 
     if verbosity > 1:
-        print "# ...done."
+        print("# ...done.")

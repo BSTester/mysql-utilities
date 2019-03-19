@@ -239,7 +239,7 @@ class Topology(Replication):
         """
         # First, print the message.
         if print_msg and not self.quiet:
-            print message
+            print(message)
         # Now log message if logging turned on
         if self.logging:
             logging.log(int(level), message.strip("#").strip(' '))
@@ -455,7 +455,7 @@ class Topology(Replication):
                             self._report(msg, logging.WARN, False)
                             if output_log:
                                 print("# {0}".format(msg))
-                    except UtilError, e:
+                    except UtilError as e:
                         msg = ("Cannot connect to slave {0}:{1} as user "
                                "'{2}'.").format(host, port, user)
                         if skip_conn_err:
@@ -488,7 +488,7 @@ class Topology(Replication):
 
         try:
             gtids = server.get_gtid_status()
-        except UtilError, e:
+        except UtilError as e:
             self._report("# ERROR retrieving GTID information: %s" % e.errmsg,
                          logging.ERROR)
             return None
@@ -1771,7 +1771,7 @@ class Topology(Replication):
         self._report("# Checking candidate slave prerequisites.")
         try:
             self._check_switchover_prerequisites(m_candidate)
-        except UtilError, e:
+        except UtilError as e:
             self._report("ERROR: %s" % e.errmsg, logging.ERROR)
             if not self.force:
                 return
@@ -2161,7 +2161,7 @@ class Topology(Replication):
                                                              check_master)
                 if slave_ok is not None and slave_ok[0]:
                     return slave_dict
-            except UtilError, e:
+            except UtilError as e:
                 self._report("# Slave eliminated due to error: %s" % e.errmsg,
                              logging.WARN)
                 # Slave gone away, skip it.

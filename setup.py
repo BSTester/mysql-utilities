@@ -18,7 +18,7 @@
 """Setup script for MySQL Utilities"""
 from __future__ import absolute_import
 
-import ConfigParser
+import configparser
 import fnmatch
 import os
 import platform
@@ -36,8 +36,8 @@ from distutils import log, dir_util
 from info import META_INFO, INSTALL
 
 # Check required Python version
-if sys.version_info[0:2] not in [(2, 6), (2, 7)]:
-    log.error("MySQL Utilities requires Python v2.6 or v2.7")
+if sys.version_info[0:2] not in [(3, 6), (3, 7)]:
+    log.error("MySQL Utilities requires Python v3.6 or v3.7")
     sys.exit(1)
 
 COMMANDS = {
@@ -390,7 +390,7 @@ class install_data(_install_data):
                 # It was a config file template, add install
                 # directories to the config file.
                 if fnmatch.fnmatch(filename, 'data/*.cfg.in'):
-                    config = ConfigParser.RawConfigParser({
+                    config = configparser.RawConfigParser({
                         'prefix': '',  # install_dir,
                         'logdir': install_logdir,
                         'sysconfdir': install_sysconfdir,

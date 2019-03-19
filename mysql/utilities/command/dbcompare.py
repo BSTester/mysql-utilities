@@ -82,17 +82,17 @@ class _CompareDBReport(object):
         if self.quiet:
             return
         # Set the variable width global parameters here
-        print _ROW_FORMAT.format(' ', self.type_width,
+        print(_ROW_FORMAT.format(' ', self.type_width,
                                  ' ', self.desc_width,
                                  "Defn", self.oper_width,
                                  "Row", self.oper_width,
-                                 "Data", self.oper_width)
-        print _ROW_FORMAT.format("Type", self.type_width,
+                                 "Data", self.oper_width))
+        print(_ROW_FORMAT.format("Type", self.type_width,
                                  "Object Name", self.desc_width,
                                  "Diff", self.oper_width,
                                  "Count", self.oper_width,
-                                 "Check", self.oper_width)
-        print "# %s" % ('-' * self.width),
+                                 "Check", self.oper_width))
+        print("# %s" % ('-' * self.width))
 
     def report_object(self, obj_type, description):
         """Print the object type and description field
@@ -103,8 +103,8 @@ class _CompareDBReport(object):
         # Skip if quiet
         if self.quiet:
             return
-        print "\n#", _RPT_FORMAT.format(obj_type, self.type_width,
-                                        description, self.desc_width),
+        print("\n#", _RPT_FORMAT.format(obj_type, self.type_width,
+                                        description, self.desc_width))
 
     def report_state(self, state):
         """Print the results of a test.
@@ -114,7 +114,7 @@ class _CompareDBReport(object):
         # Skip if quiet
         if self.quiet:
             return
-        print "{0:<{1}}".format(state, self.oper_width),
+        print("{0:<{1}}".format(state, self.oper_width))
 
     @staticmethod
     def report_errors(errors):
@@ -123,9 +123,9 @@ class _CompareDBReport(object):
         errors[in]        list of strings to print
         """
         if len(errors) > 0:
-            print "\n#"
+            print("\n#")
         for line in errors:
-            print line
+            print(line)
 
 
 def _check_databases(server1, server2, db1, db2, options):
@@ -150,7 +150,7 @@ def _check_databases(server1, server2, db1, db2, options):
         res = diff_objects(server1, server2, db1, db2, new_opt, 'DATABASE')
         if res is not None:
             for row in res:
-                print row
+                print(row)
             print
             if not options['run_all_tests'] and \
                     not options.get('quiet', False):
@@ -191,19 +191,19 @@ def _check_objects(server1, server2, db1, db2,
                     differs = True
                     if not quiet:
                         print_missing_list(in_db1, server1_str, server2_str)
-                        print "#"
+                        print("#")
                 if len(in_db2) > 0:
                     differs = True
                     if not quiet:
                         print_missing_list(in_db2, server2_str, server1_str)
-                        print "#"
+                        print("#")
             else:
                 differs = True
                 if not quiet:
                     raise UtilError(_ERROR_OBJECT_LIST.format(db1, db2))
 
     # If in verbose mode, show count of object types.
-    if options['verbosity'] > 1:
+    if options['verbosity'] or 0 > 1:
         objects = {
             'TABLE': 0,
             'VIEW': 0,
@@ -215,11 +215,11 @@ def _check_objects(server1, server2, db1, db2,
         for item in in_both:
             obj_type = item[0]
             objects[obj_type] += 1
-        print "Looking for object types table, view, trigger, procedure," + \
-              " function, and event."
-        print "Object types found common to both databases:"
+        print("Looking for object types table, view, trigger, procedure," + \
+              " function, and event.")
+        print("Object types found common to both databases:")
         for obj in objects:
-            print " {0:>12} : {1}".format(obj, objects[obj])
+            print(" {0:>12} : {1}".format(obj, objects[obj]))
 
     return (in_both, differs)
 
@@ -343,7 +343,7 @@ def _check_data_consistency(server1, server2, obj1, obj2, reporter, options):
                                             'server2', 'server1', new_opts)
             if diff_list:
                 errors = diff_list
-        except UtilError, e:
+        except UtilError as e:
             if e.errmsg.endswith("not have an usable Index or primary key."):
                 reporter.report_state('SKIP')
                 errors.append("# {0}".format(e.errmsg))
@@ -494,18 +494,18 @@ def database_compare(server1_val, server2_val, db1, db2, options):
         else:
             reporter.report_state("-")
 
-        if options['verbosity'] > 0:
+        if options['verbosity'] or 0 > 0:
             if not quiet:
                 print
             get_create_object(server1, q_obj1, options, obj_type)
             get_create_object(server2, q_obj2, options, obj_type)
 
-        if debug_msgs and options['verbosity'] > 2:
+        if debug_msgs and options['verbosity'] or 0 > 2:
             reporter.report_errors(debug_msgs)
 
         if not quiet:
             reporter.report_errors(error_list)
-
+        
         # Fail if errors are found
         if error_list:
             success = False

@@ -28,7 +28,8 @@ import codecs
 import io
 import os
 import re
-from ConfigParser import SafeConfigParser, MissingSectionHeaderError
+from configparser import (ConfigParser as SafeConfigParser,
+                              MissingSectionHeaderError)
 from mysql.utilities.common.tools import check_python_version
 
 DEFAULT_OPTION_FILES = {

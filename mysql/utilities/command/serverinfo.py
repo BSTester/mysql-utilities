@@ -331,12 +331,12 @@ def _start_server(server_val, basedir, datadir, options=None):
 
     mysqld_path = get_tool_path(basedir, "mysqld", quote=True)
 
-    print "# Server is offline."
+    print("# Server is offline.")
 
     # Check server version
-    print "# Checking server version ...",
+    print("# Checking server version ...")
     version = get_mysqld_version(mysqld_path)
-    print "done."
+    print("done.")
     if version is not None and int(version[0]) >= 5:
         post_5_5 = int(version[1]) >= 5
         post_5_6 = int(version[1]) >= 6
@@ -353,10 +353,10 @@ def _start_server(server_val, basedir, datadir, options=None):
 
     # Start the instance
     if verbosity > 0:
-        print "# Starting read-only instance of the server ..."
-        print "# --- BEGIN (server output) ---"
+        print("# Starting read-only instance of the server ...")
+        print("# --- BEGIN (server output) ---")
     else:
-        print "# Starting read-only instance of the server ...",
+        print("# Starting read-only instance of the server ...",)
     args = shlex.split(mysqld_path)
     args.extend([
         "--no-defaults",
@@ -416,7 +416,7 @@ def _start_server(server_val, basedir, datadir, options=None):
 
     # Indicate end of the server output.
     if verbosity > 0:
-        print "# --- END (server output) ---"
+        print("# --- END (server output) ---")
 
     # Raise last known exception (if unable to connect to the server)
     if error:
@@ -425,9 +425,9 @@ def _start_server(server_val, basedir, datadir, options=None):
         raise error
 
     if verbosity > 0:
-        print "# done (server started)."
+        print("# done (server started).")
     else:
-        print "done."
+        print("done.")
 
     return server
 
@@ -452,10 +452,10 @@ def _stop_server(server_val, basedir, options=None):
 
     # Stop the instance
     if verbosity > 0:
-        print "# Shutting down server ..."
-        print "# --- BEGIN (server output) ---"
+        print("# Shutting down server ...")
+        print("# --- BEGIN (server output) ---")
     else:
-        print "# Shutting down server ...",
+        print("# Shutting down server ...",)
 
     if os.name == "posix":
         cmd = mysqladmin_path + " shutdown -uroot "
@@ -474,10 +474,10 @@ def _stop_server(server_val, basedir, options=None):
     proc.wait()
 
     if verbosity > 0:
-        print "# --- END (server output) ---"
-        print "# done (server stopped)."
+        print("# --- END (server output) ---")
+        print("# done (server stopped).")
     else:
-        print "done."
+        print("done.")
 
 
 def _show_running_servers(start=3306, end=3333):
@@ -486,20 +486,20 @@ def _show_running_servers(start=3306, end=3333):
     start[in]         starting port for Windows servers
     end[in]           ending port for Windows servers
     """
-    print "# "
+    print("# ")
     processes = get_local_servers(True, start, end)
     if len(processes) > 0:
-        print "# The following MySQL servers are active on this host:"
+        print("# The following MySQL servers are active on this host:")
         for process in processes:
             if os.name == "posix":
-                print "#  Process id: %6d, Data path: %s" % \
-                    (int(process[0]), process[1])
+                print("#  Process id: %6d, Data path: %s" % \
+                    (int(process[0]), process[1]))
             elif os.name == "nt":
-                print "#  Process id: %6d, Port: %s" % \
-                      (int(process[0]), process[1])
+                print("#  Process id: %6d, Port: %s" % \
+                      (int(process[0]), process[1]))
     else:
-        print "# No active MySQL servers found."
-    print "# "
+        print("# No active MySQL servers found.")
+    print("# ")
 
 
 def show_server_info(servers, options):

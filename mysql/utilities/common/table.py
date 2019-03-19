@@ -21,7 +21,10 @@ This module contains abstractions of a MySQL table and an index.
 
 import multiprocessing
 import sys
-from itertools import izip
+try:
+    from itertools import izip
+except:
+    izip = zip
 
 from mysql.utilities.exception import UtilError, UtilDBError
 from mysql.connector.conversion import MySQLConverter
@@ -88,7 +91,7 @@ class Index(object):
         self.compared = False                    # mark as compared for speed
         self.duplicate_of = None                 # saves duplicate index
         # pylint: disable=R0102
-        if index_tuple[7] > 0:
+        if index_tuple[7] or 0 > 0:
             self.column_subparts = True          # check subparts e.g. a(20)
         else:
             self.column_subparts = False
@@ -197,7 +200,7 @@ class Index(object):
         """
 
         col = (column, sub_part)
-        if sub_part > 0:
+        if sub_part or 0 > 0:
             self.column_subparts = True
         if accept_null:
             self.accept_nulls = True
@@ -375,7 +378,7 @@ class Table(object):
         # Get max allowed packet
         res = self.server.exec_query("SELECT @@session.max_allowed_packet")
         if res:
-            self.max_packet_size = res[0][0]
+            self.max_packet_size = res[0][0] and int(res[0][0])
         else:
             self.max_packet_size = _MAXPACKET_SIZE
         # Watch for invalid values
@@ -827,8 +830,8 @@ class Table(object):
         if max_threads == 0:
             max_threads = 1
         if max_threads > 1 and self.verbose:
-            print "# Using multi-threaded insert option. Number of " \
-                  "threads = %d." % max_threads
+            print("# Using multi-threaded insert option. Number of " \
+                  "threads = %d." % max_threads)
         return (num_rows / max_threads) + max_threads
 
     def _bulk_insert(self, rows, new_db, destination=None):
@@ -879,7 +882,7 @@ class Table(object):
         for data_insert in insert_data:
             try:
                 dest.exec_query(data_insert, self.query_options)
-            except UtilError, e:
+            except UtilError as e:
                 raise UtilError("Problem inserting data. "
                                 "Error = %s" % e.errmsg)
 
@@ -887,7 +890,7 @@ class Table(object):
         for blob_insert in blob_data:
             try:
                 dest.exec_query(blob_insert, self.query_options)
-            except UtilError, e:
+            except UtilError as e:
                 raise UtilError("Problem updating blob field. "
                                 "Error = %s" % e.errmsg)
 
@@ -943,7 +946,7 @@ class Table(object):
         query_str = "INSERT INTO %s.%s SELECT * FROM %s.%s" % \
                     (new_db, self.q_tbl_name, self.q_db_name, self.q_tbl_name)
         if self.verbose and not self.quiet:
-            print query_str
+            print(query_str)
 
         # Disable foreign key checks to allow data to be copied without running
         # into foreign key referential integrity issues
@@ -1285,7 +1288,7 @@ class Table(object):
         self.indexes_q_names = []
 
         if self.verbose:
-            print "# Getting indexes for %s" % (self.table)
+            print("# Getting indexes for %s" % (self.table))
         rows = self._get_index_list()
 
         # Return False if no indexes found.
@@ -1500,7 +1503,7 @@ class Table(object):
         fmt[in]         format out output = sql, table, tab, csv
         """
 
-        print "# Showing indexes from %s:\n#" % (self.table)
+        print("# Showing indexes from %s:\n#" % (self.table))
         if fmt == "sql":
             self.__print_index_list(self.btree_indexes, fmt,
                                     verbosity=verbosity)
@@ -1518,7 +1521,7 @@ class Table(object):
             master_indexes.extend(self.fulltext_indexes)
             self.__print_index_list(master_indexes, fmt,
                                     verbosity=verbosity)
-        print "#"
+        print("#")
 
     def has_primary_key(self):
         """Check to see if there is a primary key.

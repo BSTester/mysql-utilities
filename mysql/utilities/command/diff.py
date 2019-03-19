@@ -50,12 +50,19 @@ def object_diff(server1_val, server2_val, object1, object2, options,
 
     Returns None = objects are the same, diff[] = tables differ
     """
+    objectype = options.get("objectype", 'ALL').upper()
+    if not object_type and objectype != 'ALL':
+        object_type = objectype
+    if object_type and objectype != 'ALL' and object_type != objectype:
+        print('The object type {} is skip'.format(object_type))
+        return None
     server1, server2 = server_connect(server1_val, server2_val,
                                       object1, object2, options)
 
     force = options.get("force", None)
     # Get the object type if unknown considering that objects of different
     # types can be found with the same name.
+    result = []
     if not object_type:
         # Get object types of object1
         sql_mode = server1.select_variable("SQL_MODE")
@@ -85,17 +92,28 @@ def object_diff(server1_val, server2_val, object1, object2, options,
         obj_types = set(obj1_types + obj2_types)
 
         # Diff objects considering all types found
-        result = []
         for obj_type in obj_types:
             res = diff_objects(server1, server2, object1, object2, options,
                                obj_type)
             if res:
                 result.append(res)
-        return result if len(result) > 0 else None
     else:
         # Diff objects of known type
-        return diff_objects(server1, server2, object1, object2, options,
+        res = diff_objects(server1, server2, object1, object2, options,
                             object_type)
+        if res:
+            result.append(res)
+    if len(result) > 0 and options.get("difftype", None) == 'sql' and options.get("output", None) and options.get("output", '').endswith('.sql'):
+        with open(options.get("output"), 'a', encoding='utf8') as fp:
+            for res in result:
+                if isinstance(res, list):
+                    for r in res:
+                        if r and r.strip().startswith('#'):
+                            continue
+                        fp.write('{}\n'.format(r))
+                else:
+                    fp.write('{}\n'.format(res))    
+    return result if len(result) > 0 else None
 
 
 def database_diff(server1_val, server2_val, db1, db2, options):

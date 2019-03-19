@@ -68,7 +68,7 @@ class CharsetInfo(object):
                    ["id", "character_set_name", "collation_name",
                     "maxlen", "is_default"],
                    self.charset_map)
-        print len(self.charset_map), "rows in set."
+        print(len(self.charset_map), "rows in set.")
 
     def get_name(self, chr_id):
         """Get the character set name for the given id

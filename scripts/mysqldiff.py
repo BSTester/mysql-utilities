@@ -41,7 +41,7 @@ from mysql.utilities.common.options import (add_difftype, add_verbosity,
                                             check_verbosity, add_changes_for,
                                             add_reverse, setup_common_options,
                                             add_character_set_option,
-                                            get_ssl_dict,
+                                            get_ssl_dict, add_objectype,
                                             check_password_security)
 from mysql.utilities.common.server import connect_servers
 
@@ -202,6 +202,9 @@ if __name__ == '__main__':
     # Add difftype option with SQL option
     add_difftype(parser, True)
 
+    # Add objectype option with SQL option
+    add_objectype(parser)
+
     # Add the direction (changes-for)
     add_changes_for(parser, None)
 
@@ -222,6 +225,8 @@ if __name__ == '__main__':
         "quiet": opt.quiet,
         "verbosity": opt.verbosity,
         "difftype": opt.difftype,
+        "objectype": opt.objectype,
+        "output": opt.output,
         "force": opt.force,
         "width": opt.width,
         "changes-for": opt.changes_for,
@@ -259,6 +264,14 @@ if __name__ == '__main__':
     if len(args) == 0:
         parser.error("No objects specified to compare.")
 
+    output = options.get("output", '')
+    if not output.endswith('.sql'):
+        parser.error("Output file must be end with .sql")
+
+    output = output.replace(output.split(os.sep)[-1], '')
+    if not os.path.isdir(output):
+        parser.error("Output file path {} is not exist.".format(output))
+
     # Get the sql_mode set on source and destination server
     conn_opts = {
         'quiet': True,
@@ -291,7 +304,6 @@ if __name__ == '__main__':
                 sys.exit(1)
             if diff is not None:
                 diff_failed = True
-
         # We have db1:db2
         else:
             try:
@@ -303,7 +315,6 @@ if __name__ == '__main__':
                 sys.exit(1)
             if not res:
                 diff_failed = True
-
     if diff_failed:
         if not opt.quiet:
             print("# Compare failed. One or more differences found.")

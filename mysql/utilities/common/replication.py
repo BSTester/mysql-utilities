@@ -21,7 +21,10 @@ This module contains abstractions of MySQL replication functionality.
 
 import os
 import time
-import StringIO
+try:
+    import io as StringIO
+except ImportError:
+    import StringIO
 import socket
 
 from mysql.utilities.exception import UtilError, UtilRplWarn, UtilRplError
@@ -377,7 +380,7 @@ class Replication(object):
                 errors.extend(_get_list(rows, cols))
             if pedantic:
                 for line in errors:
-                    print line
+                    print(line)
                 raise UtilRplError("Innodb settings differ between master "
                                    "and slave.")
 
@@ -415,7 +418,7 @@ class Replication(object):
                     errors.extend(_get_list(results[1], cols))
             if pedantic:
                 for line in errors:
-                    print line
+                    print(line)
                 raise UtilRplError("The master and slave have differing "
                                    "storage engine configurations!")
 
@@ -566,8 +569,8 @@ class Replication(object):
         Returns True if success, False if error
         """
         if self.master is None or self.slave is None:
-            print "ERROR: Must connect to master and slave before " \
-                  "calling replicate()"
+            print("ERROR: Must connect to master and slave before " \
+                  "calling replicate()")
             return False
 
         result = True
@@ -585,7 +588,7 @@ class Replication(object):
         # Read master log file information
         res = self.master.get_status()
         if not res:
-            print "ERROR: Cannot retrieve master status."
+            print("ERROR: Cannot retrieve master status.")
             return False
 
         # If master log file, pos not specified, read master log file info
@@ -593,7 +596,7 @@ class Replication(object):
         if self.master_log_file is None:
             res = self.master.get_status()
             if not res:
-                print "ERROR: Cannot retrieve master status."
+                print("ERROR: Cannot retrieve master status.")
                 return False
 
             read_master_info = True
@@ -622,7 +625,7 @@ class Replication(object):
 
         # Connect slave to master
         if self.verbosity > 0:
-            print "# Connecting slave to master..."
+            print("# Connecting slave to master...")
         master_values = {
             'Master_Host': self.master.host,
             'Master_Port': self.master.port,
@@ -653,22 +656,22 @@ class Replication(object):
                                                       master_values)
         res = self.slave.exec_query(change_master, self.query_options)
         if self.verbosity > 0:
-            print "# %s" % change_master
+            print("# %s" % change_master)
 
         # Start slave
         if self.verbosity > 0:
             if not self.from_beginning:
                 if read_master_info:
-                    print "# Starting slave from master's last position..."
+                    print("# Starting slave from master's last position...")
                 else:
                     msg = "# Starting slave from master log file '%s'" % \
                           self.master_log_file
                     if self.master_log_pos >= 0:
                         msg += " using position %s" % self.master_log_pos
                     msg += "..."
-                    print msg
+                    print(msg)
             else:
-                print "# Starting slave from the beginning..."
+                print("# Starting slave from the beginning...")
         res = self.slave.start(self.query_options)
 
         # Add commit because C/Py are auto_commit=0 by default
@@ -687,31 +690,31 @@ class Replication(object):
                 io_running = res[3]
                 sql_errorno = res[5]
                 sql_error = res[6]
-                print "# IO status: %s" % status
-                print "# IO thread running: %s" % io_running
+                print("# IO status: %s" % status)
+                print("# IO thread running: %s" % io_running)
                 # if io_errorno = 0 and error = '' -> no error
                 if not io_errorno and not io_error:
-                    print "# IO error: None"
+                    print("# IO error: None")
                 else:
-                    print "# IO error: %s:%s" % (io_errorno, io_error)
+                    print("# IO error: %s:%s" % (io_errorno, io_error))
                 # if io_errorno = 0 and error = '' -> no error
-                print "# SQL thread running: %s" % sql_running
+                print("# SQL thread running: %s" % sql_running)
                 if not sql_errorno and not sql_error:
-                    print "# SQL error: None"
+                    print("# SQL error: None")
                 else:
-                    print "# SQL error: %s:%s" % (io_errorno, io_error)
+                    print("# SQL error: %s:%s" % (io_errorno, io_error))
             if status == "Waiting for master to send event" and sql_running:
                 break
             elif not sql_running:
                 if self.verbosity > 0:
-                    print "# Retry to start the slave SQL thread..."
+                    print("# Retry to start the slave SQL thread...")
                 # SQL thread is not running, retry to start it
                 res = self.slave.start_sql_thread(self.query_options)
             if self.verbosity > 0:
-                print "# Waiting for slave to synchronize with master"
+                print("# Waiting for slave to synchronize with master")
             i += 1
         if i == num_tries:
-            print "ERROR: failed to sync slave with master."
+            print("ERROR: failed to sync slave with master.")
             result = False
 
         if result is True:
@@ -730,10 +733,10 @@ class Replication(object):
         """
 
         if not self.replicating:
-            print "ERROR: Replication is not running among master and slave."
-        print "# Testing replication setup..."
+            print("ERROR: Replication is not running among master and slave.")
+        print("# Testing replication setup...")
         if self.verbosity > 0:
-            print "# Creating a test database on master named %s..." % db
+            print("# Creating a test database on master named %s..." % db)
         res = self.master.exec_query("CREATE DATABASE %s" % db,
                                      self.query_options)
         i = 0
@@ -744,14 +747,14 @@ class Replication(object):
                 if row[0] == db:
                     res = self.master.exec_query("DROP DATABASE %s" % db,
                                                  self.query_options)
-                    print "# Success! Replication is running."
+                    print("# Success! Replication is running.")
                     i = num_tries
                     break
             i += 1
             if i < num_tries and self.verbosity > 0:
-                print "# Waiting for slave to synchronize with master"
+                print("# Waiting for slave to synchronize with master")
         if i == num_tries:
-            print "ERROR: Unable to complete testing."
+            print("ERROR: Unable to complete testing.")
 
 
 class Master(Server):
@@ -886,7 +889,7 @@ class Master(Server):
         if not user.has_privilege("*", "*", "REPLICATION SLAVE",
                                   globals_privs=False):
             if verbosity > 0:
-                print "# Granting replication access to replication user..."
+                print("# Granting replication access to replication user...")
             query_str = ("GRANT REPLICATION SLAVE ON *.* TO "
                          "'{0}'@'{1}' ".format(r_user, host))
             if r_pass:
@@ -1102,7 +1105,7 @@ class MasterInfo(object):
         Returns bool - True = success
         """
         if self.verbosity > 2:
-            print "# Reading master information from a %s." % self.repo.lower()
+            print("# Reading master information from a %s." % self.repo.lower())
         if self.repo == "FILE":
             # Check host name of this host. If not the same, issue error.
             if self.slave.is_alias(socket.gethostname()):
@@ -1186,7 +1189,7 @@ class MasterInfo(object):
         try:
             res = self.slave.exec_query("SELECT * FROM "
                                         "mysql.slave_master_info")
-        except UtilError, e:
+        except UtilError as e:
             raise UtilRplError("Unable to read the slave_master_info table. "
                                "Error: %s" % e.errmsg)
         if res is None or res == []:
@@ -1215,8 +1218,8 @@ class MasterInfo(object):
         self._check_read(refresh)
         stop = len(self.values)
         for i in range(0, stop):
-            print "{0:>30} : {1}".format(_MASTER_INFO_COL[i],
-                                         self.values[_MASTER_INFO_COL[i]])
+            print("{0:>30} : {1}".format(_MASTER_INFO_COL[i],
+                                         self.values[_MASTER_INFO_COL[i]]))
 
     def check_master_info(self, refresh=False):
         """Check to see if master info file matches slave status
@@ -1605,7 +1608,7 @@ class Slave(Server):
             cols = res[0]
             rows = res[1]
             for i in range(0, stop):
-                print "{0:>30} : {1}".format(cols[i], rows[0][i])
+                print("{0:>30} : {1}".format(cols[i], rows[0][i]))
         else:
             raise UtilRplError("Cannot get slave status or slave is "
                                "not configured as a slave or not "
@@ -1851,15 +1854,15 @@ class Slave(Server):
         for gtid in master_gtids:
             try:
                 if verbose:
-                    print "# Slave %s:%s:" % (self.host, self.port)
-                    print "# QUERY =", _GTID_WAIT % (gtid.strip(','), timeout)
+                    print("# Slave %s:%s:" % (self.host, self.port))
+                    print("# QUERY =", _GTID_WAIT % (gtid.strip(','), timeout))
                 res = self.exec_query(_GTID_WAIT % (gtid.strip(','), timeout))
                 if verbose:
-                    print "# Return Code =", res[0][0]
+                    print("# Return Code =", res[0][0])
                 if res is None or res[0] is None or res[0][0] is None or \
                    int(res[0][0]) < 0:
                     slave_wait_ok = False
-            except UtilRplError, e:
+            except UtilRplError as e:
                 raise UtilRplError("Error executing %s: %s" %
                                    ((_GTID_WAIT % (gtid.strip(','), timeout)),
                                     e.errmsg))
@@ -2211,8 +2214,8 @@ class Slave(Server):
                 master_values['Master_SSL_Key'] = master.ssl_key
         change_master = self.make_change_master(from_beginning, master_values)
         if show_command:
-            print "# Change master command for %s:%s" % (self.host, self.port)
-            print "#", change_master
+            print("# Change master command for %s:%s" % (self.host, self.port))
+            print("#", change_master)
         try:
             self.exec_query(change_master)
         except UtilError as err:

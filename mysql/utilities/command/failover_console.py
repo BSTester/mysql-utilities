@@ -481,14 +481,14 @@ class FailoverConsole(object):
     def _print_header(self):
         """Display header
         """
-        print _CONSOLE_HEADER
+        print(_CONSOLE_HEADER)
         next_interval = time.ctime(self.alarm)
-        print "Failover Mode =", self.mode, "    Next Interval =", \
-            next_interval
+        print("Failover Mode =", self.mode, "    Next Interval =", \
+            next_interval)
         if self.old_mode is not None and self.old_mode != self.mode:
-            print
-            print "NOTICE: Failover mode changed to fail due to another"
-            print "        instance of the console running against master."
+            print()
+            print("NOTICE: Failover mode changed to fail due to another")
+            print("        instance of the console running against master.")
             self.rows_printed += 2
             self.max_rows -= 3
         print
@@ -510,8 +510,8 @@ class FailoverConsole(object):
                              "".format(status[0], status[1]))
         except Exception as err:
             raise UtilRplError("Cannot get master status: {0}".format(err))
-        print "Master Information"
-        print "------------------"
+        print("Master Information")
+        print("------------------")
         cols = ("Binary Log File", "Position",
                 "Binlog_Do_DB", "Binlog_Ignore_DB")
         fmt_opts = {
@@ -531,16 +531,16 @@ class FailoverConsole(object):
                 # Add each GTID to a tuple to match the required format to
                 # print the full GRID list correctly.
                 self.master_gtids.append((gtid.strip(","),))
-        print "\nGTID Executed Set"
+        print("\nGTID Executed Set")
         try:
-            print self.master_gtids[0][0],
+            print(self.master_gtids[0][0],)
         except IndexError:
-            print "None",
+            print("None")
         if len(self.master_gtids) > 1:
-            print "[...]"
+            print("[...]")
         else:
-            print
-        print
+            print()
+        print()
         self.rows_printed += 7
 
     def _print_warnings(self):
@@ -622,7 +622,7 @@ class FailoverConsole(object):
         # Print list name
         if comment is None:
             comment = self.comment
-        print comment
+        print(comment)
         self.rows_printed += 1
 
         # Print the list in the remaining space
@@ -644,7 +644,7 @@ class FailoverConsole(object):
             print_list(sys.stdout, 'GRID', self.list_data[0], rows)
             self.rows_printed += self.scroll_size + 4
         else:
-            print "0 Rows Found."
+            print("0 Rows Found.")
             self.rows_printed += 1
 
         if refresh:

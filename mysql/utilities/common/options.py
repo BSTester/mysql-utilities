@@ -30,7 +30,7 @@ import os.path
 import re
 
 from datetime import datetime
-from ip_parser import find_password, parse_login_values_config_path
+from .ip_parser import find_password, parse_login_values_config_path
 from mysql.utilities import LICENSE_FRM, VERSION_FRM
 from mysql.utilities.exception import UtilError, FormatError
 from mysql.connector.conversion import MySQLConverter
@@ -46,6 +46,7 @@ from mysql.utilities.common.my_print_defaults import (MyDefaultsReader,
 from mysql.utilities.common.pattern_matching import parse_object_name
 from mysql.utilities.common.sql_transform import (is_quoted_with_backticks,
                                                   remove_backtick_quoting)
+import time
 
 
 _PERMITTED_FORMATS = ["grid", "tab", "csv", "vertical"]
@@ -61,7 +62,7 @@ class UtilitiesParser(optparse.OptionParser):
     def print_help(self, output=None):
         """Show version information before help
         """
-        print self.version
+        print(self.version)
         optparse.OptionParser.print_help(self, output)
 
     def format_epilog(self, formatter):
@@ -405,7 +406,7 @@ def check_verbosity(options):
     # Warn if quiet and verbosity are both specified
     if options.quiet is not None and options.quiet and \
        options.verbosity is not None and options.verbosity > 0:
-        print "WARNING: --verbosity is ignored when --quiet is specified."
+        print("WARNING: --verbosity is ignored when --quiet is specified.")
         options.verbosity = None
 
 
@@ -450,12 +451,27 @@ def add_difftype(parser, allow_sql=False, default="unified"):
     choice_list = ['unified', 'context', 'differ']
     if allow_sql:
         choice_list.append('sql')
+        parser.add_option("-O", "--output", action="store", dest="output",
+                        default=os.path.join(os.path.abspath('.'), 'mysqldiff_{}.sql'.format(time.strftime('%Y%m%d%H%M%S'))), help="sql file save path. e.g. /data/mysql/diff.sql")
     parser.add_option("-d", "--difftype", action="store", dest="difftype",
                       type="choice", default="unified", choices=choice_list,
                       help="display differences in context format in one of "
                       "the following formats: [%s] (default: unified)." %
                       '|'.join(choice_list))
 
+def add_objectype(parser):
+    """Add the objectype option.
+
+    parser[in]        the parser instance
+    default[in]       the default option
+                      (default is None)
+    """
+    choice_list = ["ALL", "DATABASE", "TABLE", "VIEW", "TRIGGER", "PROCEDURE", "FUNCTION", "EVENT", "GRANT"]
+    parser.add_option("-o", "--objectype", action="store", dest="objectype",
+                      type="choice", default='ALL', choices=choice_list,
+                      help="display differences in context format in one of "
+                      "the following formats: [%s] (default: ALL)." %
+                      '|'.join(choice_list))
 
 def add_engines(parser):
     """Add the engine and default-storage-engine options.
@@ -502,7 +518,7 @@ def check_engine_options(server, new_engine, def_engine,
             if not found and fail:
                 raise UtilError(message)
             elif not found and not quiet:
-                print message
+                print(message)
 
     server.get_storage_engines()
     message = "WARNING: %s storage engine %s is not supported on the server."
@@ -590,10 +606,10 @@ def check_exclude_pattern(exclude_list, use_regexp):
         test = row.replace('_', '').replace('%', '').replace('`', '')
         test = test.replace("'", "").replace('.', '').replace('"', '')
         if len(test) > 0 and not test.isalnum() and not use_regexp:
-            print "# WARNING: One or more of your --exclude patterns " \
+            print("# WARNING: One or more of your --exclude patterns " \
                   "contains symbols that could be regexp patterns. You may " \
                   "need to include --regexp to ensure your exclude pattern " \
-                  "is evaluated as REGEXP and not a SQL LIKE expression."
+                  "is evaluated as REGEXP and not a SQL LIKE expression.")
             return False
     return True
 

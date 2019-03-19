@@ -408,7 +408,7 @@ if __name__ == '__main__':
             frm_files_found.append(arg)
 
         if not frm_files_found:
-            print "# NOTE: No .frm files found in folder %s." % arg
+            print("# NOTE: No .frm files found in folder %s." % arg)
             continue
         all_frm_files.extend(frm_files_found)
 
@@ -424,13 +424,13 @@ if __name__ == '__main__':
                        "You can try the --diagnostic mode to read these "
                        "files.\n#")
                 for frm_file in failed:
-                    print "#", frm_file
-                print "#"
+                    print("#", frm_file)
+                print("#")
     except UtilError as error:
-        print "ERROR: {0}".format(error.errmsg)
+        print("ERROR: {0}".format(error.errmsg))
         sys.exit(1)
 
     if not opt.quiet:
-        print "#...done."
+        print("#...done.")
 
     sys.exit()

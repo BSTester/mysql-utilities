@@ -470,8 +470,8 @@ class Utilities(object):
                                   ['name', 'description'],
                                   list_of_utilities, self.width)
         else:
-            print
-            print "No utilities match the search term."
+            print()
+            print("No utilities match the search term.")
         print
 
     def get_options_dictionary(self, utility_options):

@@ -197,7 +197,7 @@ def _build_logfile_list(server, log_name, suffix='_file'):
     log_path = None
     res = server.show_server_variable(log_name)
     if res != [] and res[0][1].upper() == 'OFF':
-        print "# The %s is turned off on the server." % log_name
+        print("# The %s is turned off on the server." % log_name)
     else:
         res = server.show_server_variable(log_name + suffix)
         if res == []:
@@ -237,14 +237,14 @@ def _get_log_information(server, log_name, suffix='_file', is_remote=False):
 
     res = server.show_server_variable(log_name)
     if res != [] and res[0][1].upper() == 'OFF':
-        print "# The %s is turned off on the server." % log_name
+        print("# The %s is turned off on the server." % log_name)
     else:
         log_file, log_path, log_size = _build_logfile_list(server, log_name,
                                                            suffix)
         if log_file is None or log_path is None or \
            not os.access(log_path, os.R_OK):
-            print "# %s information is not accessible. " % log_name + \
-                  "Check your permissions."
+            print("# %s information is not accessible. " % log_name + \
+                  "Check your permissions.")
             return None, 0
         return log_file, log_size
     return None, 0
@@ -556,11 +556,11 @@ def show_database_usage(server, datadir, dblist, options):
                                              is_remote)
 
     if not quiet:
-        print "# Database totals:"
+        print("# Database totals:")
     print_list(sys.stdout, fmt, columns, rows, no_headers)
     if not quiet:
         _print_size("\nTotal database disk usage = ", db_total)
-        print
+        print()
 
     return True
 
@@ -582,7 +582,7 @@ def show_logfile_usage(server, options):
     quiet = options.get("quiet", False)
 
     if not quiet:
-        print "# Log information."
+        print("# Log information.")
     total = 0
 
     _LOG_NAMES = [
@@ -825,7 +825,7 @@ def show_innodb_usage(server, datadir, options):
     # Check to see if we have innodb
     res = server.show_server_variable('have_innodb')
     if res != [] and res[0][1].upper() in ("NO", "DISABLED"):
-        print "# InnoDB is disabled on this server."
+        print("# InnoDB is disabled on this server.")
         return True
 
     # Modified check for version 5.5
@@ -834,7 +834,7 @@ def show_innodb_usage(server, datadir, options):
                             "FROM INFORMATION_SCHEMA.ENGINES "
                             "WHERE engine='InnoDB'")
     if res != [] and res[0][1].upper() == "NO":
-        print "# InnoDB is disabled on this server."
+        print("# InnoDB is disabled on this server.")
         return True
 
     # Check to see if innodb_file_per_table is ON
@@ -854,7 +854,7 @@ def show_innodb_usage(server, datadir, options):
 
     if not is_remote and os.access(innodb_dir, os.R_OK):
         if not quiet:
-            print "# InnoDB tablespace information:"
+            print("# InnoDB tablespace information:")
 
         res = server.show_server_variable('innodb_data_file_path')
         tablespaces = []
@@ -910,14 +910,14 @@ def show_innodb_usage(server, datadir, options):
                     parts = tablespace[3].split(":")
                     if len(parts) > 2:
                         ts_size = int(tablespace[1]) / _MB
-                        print "Tablespace %s can be " % tablespace[3] + \
+                        print("Tablespace %s can be " % tablespace[3] + \
                               "extended by using %s:%sM[...]\n" % \
-                              (parts[0], ts_size)
+                              (parts[0], ts_size))
     elif is_remote:
         print("# InnoDB data information not accessible from a remote host.")
     else:
-        print "# InnoDB data file information is not accessible. " + \
-              "Check your permissions."
+        print("# InnoDB data file information is not accessible. " + \
+              "Check your permissions.")
 
     if not innodb_file_per_table:
         res = server.exec_query(_QUERY_DATAFREE)
@@ -928,6 +928,6 @@ def show_innodb_usage(server, datadir, options):
                 fs_size = int(res[0][0])
                 if not quiet:
                     _print_size("InnoDB freespace = ", fs_size)
-                    print
+                    print()
 
     return True

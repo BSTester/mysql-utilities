@@ -248,7 +248,7 @@ class ProcessGrep(object):
                 if PRINT_PROCESS in self.__actions:
                     entries.append(tuple([_spec(info)] + list(row)))
             if print_rows:
-                print "# The following KILL commands were executed:"
+                print("# The following KILL commands were executed:")
                 print_list(output, fmt, cols, print_rows)
 
         # If output is None, nothing is printed

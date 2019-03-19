@@ -57,46 +57,46 @@ def setup_replication(master_vals, slave_vals, rpl_user,
     rpl = Replication(master, slave, rpl_options)
     errors = rpl.check_server_ids()
     for error in errors:
-        print error
+        print(error)
 
     # Check for server_id uniqueness
     if verbosity > 0:
-        print "# master id = %s" % master.get_server_id()
-        print "#  slave id = %s" % slave.get_server_id()
+        print("# master id = %s" % master.get_server_id())
+        print("#  slave id = %s" % slave.get_server_id())
 
     errors = rpl.check_server_uuids()
     for error in errors:
-        print error
+        print(error)
 
     # Check for server_uuid uniqueness
     if verbosity > 0:
-        print "# master uuid = %s" % master.get_server_uuid()
-        print "#  slave uuid = %s" % slave.get_server_uuid()
+        print("# master uuid = %s" % master.get_server_uuid())
+        print("#  slave uuid = %s" % slave.get_server_uuid())
 
     # Check InnoDB compatibility
     if verbosity > 0:
-        print "# Checking InnoDB statistics for type and version conflicts."
+        print("# Checking InnoDB statistics for type and version conflicts.")
 
     errors = rpl.check_innodb_compatibility(options)
     for error in errors:
-        print error
+        print(error)
 
     # Checking storage engines
     if verbosity > 0:
-        print "# Checking storage engines..."
+        print("# Checking storage engines...")
 
     errors = rpl.check_storage_engines(options)
     for error in errors:
-        print error
+        print(error)
 
     # Check master for binary logging
-    print "# Checking for binary logging on master..."
+    print("# Checking for binary logging on master...")
     errors = rpl.check_master_binlog()
     if errors != []:
         raise UtilError(errors[0])
 
     # Setup replication
-    print "# Setting up replication..."
+    print("# Setting up replication...")
     if not rpl.setup(rpl_user, 10):
         raise UtilError("Cannot setup replication.")
 
@@ -104,7 +104,7 @@ def setup_replication(master_vals, slave_vals, rpl_user,
     if test_db:
         rpl.test(test_db, 10)
 
-    print "# ...done."
+    print("# ...done.")
 
 
 def start_ms_replication(slave_vals, masters_vals, options):

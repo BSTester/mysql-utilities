@@ -93,9 +93,9 @@ class Variables(dict):
         var_list = [{'name': key, 'value': value}
                     for key, value in self.iteritems()]
 
-        print "\n"
+        print("\n")
         if not self:
-            print "There are no variables defined.\n"
+            print("There are no variables defined.\n")
             return
 
         print_dictionary_list(['Variable', 'Value'], ['name', 'value'],

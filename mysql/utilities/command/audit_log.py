@@ -106,15 +106,15 @@ def check_command_value(command, value):
             try:
                 int_value = int(value)
             except ValueError:
-                print "Invalid integer value: %s" % value
+                print("Invalid integer value: %s" % value)
                 return False
             if int_value < values[0] or int_value > values[1]:
-                print "The %s command requires values in the range (%s, %s)." \
-                      % (command, values[0], values[1])
+                print("The %s command requires values in the range (%s, %s)." \
+                      % (command, values[0], values[1]))
                 return False
         elif value.upper() not in _VALID_COMMAND_OPTIONS['policies']:
-            print "The %s command requires one of the following " % command + \
-                  "values: %s." % ', '.join(_VALID_COMMAND_OPTIONS['policies'])
+            print("The %s command requires one of the following " % command + \
+                  "values: %s." % ', '.join(_VALID_COMMAND_OPTIONS['policies']))
             return False
 
     return True
@@ -176,7 +176,7 @@ class AuditLog(object):
         else:
             # Print message notifying that no entry was found
             no_entry_msg = "#\n# No entry found!\n#"
-            print no_entry_msg
+            print(no_entry_msg)
 
     def check_audit_log(self):
         """Verify if the audit log plugin is installed on the server.
@@ -201,11 +201,11 @@ class AuditLog(object):
         out_format = self.options.get("format", "GRID")
         log_name = self.options.get("log_name", None)
         # Print file statistics:
-        print "#\n# Audit Log File Statistics:\n#"
+        print("#\n# Audit Log File Statistics:\n#")
         show_file_statistics(log_name, False, out_format)
 
         # Print audit log 'AUDIT' entries
-        print "\n#\n# Audit Log Startup Entries:\n#\n"
+        print("\n#\n# Audit Log Startup Entries:\n#\n")
         cols, rows = convert_dictionary_list(self.log.header_rows)
         # Note: No need to sort rows, retrieved with the same order
         # as read (i.e., sorted by timestamp)
@@ -219,7 +219,7 @@ class AuditLog(object):
         rows = server.show_server_variable("audit%")
         server.disconnect()
         if rows:
-            print "#\n# Audit Log Variables and Options\n#"
+            print("#\n# Audit Log Variables and Options\n#")
             print_list(sys.stdout, "GRID", ['Variable_name', 'Value'],
                        rows)
             print
@@ -341,7 +341,7 @@ class AuditLog(object):
         server.connect()
 
         # Now execute the command
-        print "#\n# Executing %s command.\n#\n" % command
+        print("#\n# Executing %s command.\n#\n" % command)
         try:
             if command == "POLICY":
                 self._change_policy(server, command_value)

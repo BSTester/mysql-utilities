@@ -35,11 +35,11 @@ def _show_user_grants(source, user_source, base_user, verbosity):
     try:
         if not user_source:
             user_source = User(source, base_user, verbosity)
-        print "# Dumping grants for user " + base_user
+        print("# Dumping grants for user " + base_user)
         user_source.print_grants()
     except UtilError:
-        print "# Cannot show grants for user %s." % base_user + \
-              "Please check user and host for valid names."
+        print("# Cannot show grants for user %s." % base_user + \
+              "Please check user and host for valid names.")
 
 
 def show_users(src_val, verbosity, fmt, dump=False):
@@ -74,7 +74,7 @@ def show_users(src_val, verbosity, fmt, dump=False):
         cols = ("user", "host", "database")
 
     users = source.exec_query(_QUERY)
-    print "# All Users:"
+    print("# All Users:")
     print_list(sys.stdout, fmt, cols, users)
     if dump:
         for user in users:
@@ -177,7 +177,7 @@ def clone_user(src_val, dest_val, base_user, new_user_list, options):
                                 "to drop and recreate user." % new_user)
 
     if not quiet:
-        print "# Cloning %d users..." % (len(new_user_list))
+        print("# Cloning %d users..." % (len(new_user_list)))
     # Check privileges to create/delete users.
     can_create = can_drop = False
     if user_priv_giver.has_privilege('*', '*', "CREATE_USER"):
@@ -197,7 +197,7 @@ def clone_user(src_val, dest_val, base_user, new_user_list, options):
     # Perform the clone here. Loop through new users and clone.
     for new_user in new_user_list:
         if not quiet:
-            print "# Cloning %s to user %s " % (base_user, new_user)
+            print("# Cloning %s to user %s " % (base_user, new_user))
         # Check to see if user exists.
         if user_dest.exists(new_user):
             if not can_drop:  # Destination user cannot drop existing users.
@@ -231,6 +231,6 @@ def clone_user(src_val, dest_val, base_user, new_user_list, options):
             raise
 
     if not quiet:
-        print "# ...done."
+        print("# ...done.")
 
     return True

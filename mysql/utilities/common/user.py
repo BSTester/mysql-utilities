@@ -262,7 +262,7 @@ class User(object):
                                   "Cannot create user.".format(authentication))
             query_str += "IDENTIFIED WITH '{0}'".format(authentication)
         if self.verbosity > 0:
-            print query_str
+            print(query_str)
 
         self.server1.exec_query(query_str, self.query_options)
 
@@ -284,7 +284,7 @@ class User(object):
             query_str += "'%s'@'%s' " % (self.user, self.host)
 
         if self.verbosity > 0:
-            print query_str
+            print(query_str)
 
         try:
             self.server1.exec_query(query_str, self.query_options)
@@ -632,7 +632,7 @@ class User(object):
 
         res = self.get_grants(True)
         for grant_tuple in res:
-            print grant_tuple[0]
+            print(grant_tuple[0])
 
     def _get_authentication(self):
         """ Return authentication string """
@@ -691,7 +691,7 @@ class User(object):
                 grant = grant[0:start] + grant[end:]
 
             if self.verbosity > 0:
-                print grant
+                print(grant)
 
             res = server.exec_query(grant, self.query_options)
 

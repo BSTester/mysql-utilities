@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,10 +57,13 @@ _CHECK_BLOBS_NOT_NULL = """
 _BLOBS_NOT_NULL_MSG = ("{0}: The following tables have blob fields set to "
                        "NOT NULL.")
 _BLOBS_NOT_NULL_ERROR = ("The copy operation cannot proceed unless "
-                         "the blob fields permit NULL values. To copy data "
-                         "with NOT NULL blob fields, first remove the NOT "
-                         "NULL restriction, copy the data, then add the NOT "
-                         "NULL restriction using ALTER TABLE statements.")
+                         "the blob fields permit NULL values.\nTo copy data "
+                         "with NOT NULL blob fields, you can either:\na) "
+                         "First remove the NOT NULL restriction, copy the "
+                         "data, then add the NOT NULL restriction using "
+                         "ALTER TABLE statements.\n  -or-\nb) Run the "
+                         "command again with the --not-null-blobs "
+                         "option and the utility will perform (a) for you.\n")
 _AUTO_INC_WARNING = ("# WARNING: One or more tables were detected with a "
                      "value of 0 in an auto_increment column. To enable "
                      "copying of data, the code enabled the sql_mode "
@@ -153,7 +156,7 @@ def _copy_objects(source, destination, db_list, options,
                 msg = "# Copying database %s " % db_name[0]
                 if db_name[1]:
                     msg += "renamed as %s" % (db_name[1])
-                print msg
+                print(msg)
 
         # Get a Database class instance
         db = Database(source, db_name[0], options)
@@ -263,7 +266,7 @@ def copy_db(src_val, dest_val, db_list, options):
         # The --all option is valid only if not cloning.
         if not cloning:
             if not quiet:
-                print "# Including all databases."
+                print("# Including all databases.")
             rows = source.get_all_databases()
             for row in rows:
                 db_list.append((row[0], None))  # Keep same name
@@ -278,7 +281,7 @@ def copy_db(src_val, dest_val, db_list, options):
                                  "PERFORMANCE_SCHEMA", "SYS"]:
                 continue
             if db[0] not in dbs:
-                print _GTID_BACKUP_WARNING
+                print(_GTID_BACKUP_WARNING)
                 break
 
     # Do error checking and preliminary work:
@@ -354,13 +357,13 @@ def copy_db(src_val, dest_val, db_list, options):
     if not skip_gtid:
         gtid_info = get_gtid_commands(source)
         if src_gtid and not dest_gtid:
-            print _NON_GTID_WARNING % ("destination", "source", "to")
+            print(_NON_GTID_WARNING % ("destination", "source", "to"))
         elif not src_gtid and dest_gtid:
-            print _NON_GTID_WARNING % ("source", "destination", "from")
+            print(_NON_GTID_WARNING % ("source", "destination", "from"))
     else:
         gtid_info = None
         if src_gtid and not cloning:
-            print _GTID_WARNING
+            print(_GTID_WARNING)
 
     # If cloning, turn off gtid generation
     if gtid_info and cloning:
@@ -372,7 +375,7 @@ def copy_db(src_val, dest_val, db_list, options):
         # Check the gtid_purged value too
         destination.check_gtid_executed()
         for cmd in gtid_info[0]:
-            print "# GTID operation:", cmd
+            print("# GTID operation:", cmd)
             destination.exec_query(cmd, {'fetch': False, 'commit': False})
 
     if options.get("rpl_mode", None):
@@ -470,16 +473,16 @@ def copy_db(src_val, dest_val, db_list, options):
 
     # if GTIDs enabled, write the GTID-related commands
     if gtid_info and dest_gtid:
-        print "# GTID operation:", gtid_info[1]
+        print("# GTID operation:", gtid_info[1])
         destination.exec_query(gtid_info[1])
 
     if options.get("rpl_mode", None):
         for cmd in rpl_info[_RPL_COMMANDS]:
             if cmd[0] == '#' and not quiet:
-                print cmd
+                print(cmd)
             else:
                 if verbose:
-                    print cmd
+                    print(cmd)
                 destination.exec_query(cmd)
         destination.exec_query("START SLAVE;")
 
@@ -493,5 +496,5 @@ def copy_db(src_val, dest_val, db_list, options):
             print("# {0}".format(sql_mode_str))
 
     if not quiet:
-        print "#...done."
+        print("#...done.")
     return True
