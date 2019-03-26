@@ -101,7 +101,13 @@ class MySQLConverterBase(object):
 
     def quote(self, buf):
         """Quote buffer for sending to MySQL"""
-        return str(buf)
+        if isinstance(buf, (bytes, bytearray)):
+            try:
+                return buf.decode('utf8')
+            except:
+                return str(buf)
+        else:
+            return str(buf)
 
 
 class MySQLConverter(MySQLConverterBase):
@@ -166,13 +172,13 @@ class MySQLConverter(MySQLConverterBase):
                 else:
                     return str(buf)
             else:
-                return str(buf).encode('ascii')
+                return str(buf)
         elif isinstance(buf, type(None)):
-            return bytearray(b"NULL")
+            return bytearray(b"NULL").decode('utf8')
         elif isinstance(buf, bytes):
-            return bytearray(b"'" + buf + b"'")
+            return bytearray(b"'" + buf + b"'").decode('utf8')
         else:
-            return bytearray(("'" + buf + "'").encode('utf8'))
+            return bytearray(("'" + buf + "'").encode('utf8')).decode('utf8')
 
     def to_mysql(self, value):
         """Convert Python data type to MySQL"""

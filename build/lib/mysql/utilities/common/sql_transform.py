@@ -167,7 +167,7 @@ def convert_special_characters(str_val):
     respective escape sequence.
     """
     # Check if the input value is a string before performing replacement.
-    if str_val and isinstance(str_val, basestring):
+    if str_val and isinstance(str_val, str):
         # First replace backslash '\' character, to avoid replacing '\' in
         # further escape sequences. backslash_re matches '|' not followed by %
         # as \% and \_ do not need to be replaced, and when '|' appear at the
