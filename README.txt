@@ -1,4 +1,4 @@
-MySQL Utilities 1.6
+MySQL Utilities 1.6(Python 3.7 support)
 
 This is a release of MySQL Utilities, the dual-license, complete 
 database modeling, administration and development program for MySQL. 
@@ -111,6 +111,7 @@ the various releases.
     2.6.4           2.6.3       2009        PSF         yes
     2.6.5           2.6.4       2010        PSF         yes
     2.7             2.6         2010        PSF         yes
+    3.7             2.7         2019        PSF         yes
 
 Footnotes:
 
