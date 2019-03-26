@@ -173,7 +173,7 @@ class Utilities(object):
         else:
             self.posible_utilities.update(self.extra_utilities)
         self.available_utilities = self.posible_utilities
-        for util_name, ver_compatibility in self.posible_utilities.iteritems():
+        for util_name, ver_compatibility in self.posible_utilities.items():
             name_utility = "{0} utility".format(util_name)
             if ver_compatibility:
                 min_v, max_v = ver_compatibility

@@ -144,7 +144,7 @@ def get_connection_dictionary(conn_info, ssl_dict=None):
     elif isinstance(conn_info, Server):
         # get server's dictionary
         conn_val = conn_info.get_connection_values()
-    elif isinstance(conn_info, basestring):
+    elif isinstance(conn_info, str):
         # parse the string
         conn_val = parse_connection(conn_info, options=ssl_dict)
     else:
