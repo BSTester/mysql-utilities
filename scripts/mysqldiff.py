@@ -264,7 +264,7 @@ if __name__ == '__main__':
     if len(args) == 0:
         parser.error("No objects specified to compare.")
 
-    output = options.get("output", '')
+    output = os.path.abspath(options.get("output", ''))
     if not output.endswith('.sql'):
         parser.error("Output file must be end with .sql")
 

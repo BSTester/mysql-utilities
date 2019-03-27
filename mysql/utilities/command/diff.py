@@ -27,6 +27,7 @@ from mysql.utilities.common.dbcompare import (diff_objects, get_common_objects,
                                               server_connect)
 from mysql.utilities.common.sql_transform import (is_quoted_with_backticks,
                                                   quote_with_backticks)
+from mysql.utilities.command.dbexport import parse_options, export_db
 
 
 def object_diff(server1_val, server2_val, object1, object2, options,
@@ -146,13 +147,26 @@ def database_diff(server1_val, server2_val, db1, db2, options):
                                       db1, db2, options)
     in_both, in_db1, in_db2 = get_common_objects(server1, server2,
                                                  db1, db2, True, options)
-    
-    if len(in_db2) > 0 and options.get("difftype", None) == 'sql' and options.get("output", None) and options.get("output", '').endswith('.sql'):
-        with open('{}{}'.format(options.get("output"), '.miss'), 'a', encoding='utf8') as fp:
-            for items in in_db2:
-                if items[0] == 'TABLE':
-                    fp.write('{}.{}\n'.format(db2, items[1][0]))
-    
+    direction = options.get("changes-for", None)
+    if direction == 'server1' or direction is None:
+        include = ['{}.{}'.format(db2, tb[1][0]) if tb[0] == 'TABLE' else '' for tb in in_db2]
+        server = '{}:{}@{}:{}'.format(server2_val.get('user', 'root'), server2_val.get('passwd', '123456'),
+        server2_val.get('host', 'localhost'), server2_val.get('port', '3306'))
+        db = db2
+    else:
+        include = ['{}.{}'.format(db1, tb[1][0]) if tb[0] == 'TABLE' else '' for tb in in_db1]
+        server = '{}:{}@{}:{}'.format(server1_val.get('user', 'root'), server1_val.get('passwd', '123456'),
+        server1_val.get('host', 'localhost'), server1_val.get('port', '3306'))
+        db = db1
+    if include:
+        default = ['--server={}'.format(server), '--skip-blobs', '--skip-gtid', '--skip-fkey-checks', '--multiprocess=0', '--output-file={}'.format(options.get("output", "")),
+        '--skip=views,triggers,procedures,functions,events,grants,data,create_db']
+        for tb in include:
+            default.append('--include={}'.format(tb))
+        parser = parse_options()
+        if parser:
+            export_db(parser, args=default, values=[db])
+
     in_both.sort()
     if (len(in_db1) > 0 or len(in_db2) > 0) and not force:
         return False
