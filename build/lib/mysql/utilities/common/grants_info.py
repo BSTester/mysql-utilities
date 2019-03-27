@@ -304,7 +304,7 @@ def _build_privilege_dicts(server, obj_type_dict, inherit_level=GLOBAL_LEVEL):
             # If we already have the privileges for the database where the
             # table is at, we can use that information.
             if db_grantee_dict[db_name]:
-                for grantee, priv_set in db_grantee_dict[db_name].iteritems():
+                for grantee, priv_set in db_grantee_dict[db_name].items():
                     table_grantee_dict[db_name][tbl_name][grantee].update(
                         filter_grants(priv_set, TABLE_TYPE))
             else:
@@ -334,7 +334,7 @@ def _build_privilege_dicts(server, obj_type_dict, inherit_level=GLOBAL_LEVEL):
             # If we already have the privileges for the database where the
             # routine is at, we can use that information.
             if db_grantee_dict[db_name]:
-                for grantee, priv_set in db_grantee_dict[db_name].iteritems():
+                for grantee, priv_set in db_grantee_dict[db_name].items():
                     proc_grantee_dict[db_name][proc_name][grantee].update(
                         filter_grants(priv_set, ROUTINE_TYPE))
             else:
@@ -353,22 +353,22 @@ def _build_privilege_dicts(server, obj_type_dict, inherit_level=GLOBAL_LEVEL):
     # TODO Refactor the code below to remove code repetition.
 
     # Simplify sets of privileges for databases.
-    for grantee_dict in db_grantee_dict.itervalues():
-        for grantee, priv_set in grantee_dict.iteritems():
+    for grantee_dict in db_grantee_dict.values():
+        for grantee, priv_set in grantee_dict.items():
             grantee_dict[grantee] = simplify_grants(priv_set,
                                                     DATABASE_TYPE)
 
     # Simplify sets of privileges for tables.
-    for tbl_dict in table_grantee_dict.itervalues():
-        for grantee_dict in tbl_dict.itervalues():
-            for grantee, priv_set in grantee_dict.iteritems():
+    for tbl_dict in table_grantee_dict.values():
+        for grantee_dict in tbl_dict.values():
+            for grantee, priv_set in grantee_dict.items():
                 grantee_dict[grantee] = simplify_grants(priv_set,
                                                         TABLE_TYPE)
 
     # Simplify sets of privileges for routines.
-    for proc_dict in proc_grantee_dict.itervalues():
-        for grantee_dict in proc_dict.itervalues():
-            for grantee, priv_set in grantee_dict.iteritems():
+    for proc_dict in proc_grantee_dict.values():
+        for grantee_dict in proc_dict.values():
+            for grantee, priv_set in grantee_dict.items():
                 grantee_dict[grantee] = simplify_grants(priv_set,
                                                         ROUTINE_TYPE)
 
@@ -442,7 +442,7 @@ def get_grantees(server, valid_obj_type_dict, req_privileges=None,
     for obj_type in valid_obj_type_dict:
         for db_name, obj_name in valid_obj_type_dict[obj_type]:
             if obj_type == DATABASE_TYPE:
-                for grantee, priv_set in db_dict[obj_name].iteritems():
+                for grantee, priv_set in db_dict[obj_name].items():
                     if req_privileges is not None:
                         if _has_all_privileges(req_privileges,
                                                priv_set, obj_type):
@@ -460,7 +460,7 @@ def get_grantees(server, valid_obj_type_dict, req_privileges=None,
                     type_dict = proc_dict
 
                 for grantee, priv_set in \
-                        type_dict[db_name][obj_name].iteritems():
+                        type_dict[db_name][obj_name].items():
                     # Get the full qualified name for the object
                     f_obj_name = "{0}.{1}".format(db_name, obj_name)
                     if req_privileges is not None:

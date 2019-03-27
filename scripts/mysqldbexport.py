@@ -37,7 +37,7 @@ from mysql.utilities.common.options import (
     add_no_headers_option, add_regexp, add_rpl_mode, add_rpl_user,
     add_skip_options, add_verbosity, check_all, check_rpl_options,
     check_skip_options, check_verbosity, setup_common_options,
-    check_password_security, get_ssl_dict, add_exclude, check_exclude_pattern
+    check_password_security, get_ssl_dict, add_include, add_exclude, check_exclude_pattern
 )
 from mysql.utilities.common.server import connect_servers
 from mysql.utilities.common.sql_transform import (is_quoted_with_backticks,
@@ -120,6 +120,9 @@ if __name__ == '__main__':
 
     # Add the exclude database option
     add_exclude(parser)
+
+    # Add the include database option
+    add_include(parser)
 
     # Add the all database options
     add_all(parser, "databases")
@@ -215,6 +218,12 @@ if __name__ == '__main__':
     else:
         exclude_list = opt.exclude
 
+    if opt.include:
+        # Remove unnecessary outer quotes.
+        include_list = [pattern.strip("'\"") for pattern in opt.include]
+    else:
+        include_list = opt.include
+
     # Check for regexp symbols
     check_exclude_pattern(exclude_list, opt.use_regexp)
 
@@ -243,14 +252,14 @@ if __name__ == '__main__':
                   "will be overwritten.")
         output_filename = opt.output_file
         try:
-            output_file = open(output_filename, 'w')
+            output_file = open(output_filename, 'w', encoding='utf8')
         except IOError:
             parser.error("Unable to create file (check path and access "
                          "privileges): {0}".format(opt.output_file))
     else:
         # Always send output to a file for performance reasons (contents sent
         # at the end to the stdout).
-        output_file = tempfile.NamedTemporaryFile(delete=False)
+        output_file = tempfile.NamedTemporaryFile(delete=False, mode='w+', encoding='utf8')
         output_filename = None
 
     # Set options for database operations.
@@ -272,9 +281,10 @@ if __name__ == '__main__':
         "single": not opt.bulk_import,
         "quiet": opt.quiet,
         "verbosity": opt.verbosity,
-        "debug": opt.verbosity >= 3,
+        "debug": opt.verbosity or 0 >= 3,
         "file_per_tbl": opt.file_per_tbl,
         "exclude_patterns": exclude_list,
+        "include_patterns": include_list,
         "all": opt.all,
         "use_regexp": opt.use_regexp,
         "locking": opt.locking,
@@ -322,7 +332,7 @@ if __name__ == '__main__':
 
     try:
         # record start time
-        if opt.verbosity >= 3:
+        if opt.verbosity or 0 >= 3:
             start_export_time = time.time()
 
         # Export databases concurrently for non posix systems (windows).
@@ -353,7 +363,7 @@ if __name__ == '__main__':
             # Merge resulting temp files (if generated).
             for tmp_filename in tmp_files_list:
                 if tmp_filename:
-                    tmp_file = open(tmp_filename, 'r')
+                    tmp_file = open(tmp_filename, 'r', encoding='utf8')
                     shutil.copyfileobj(tmp_file, output_file)
                     tmp_file.close()
                     os.remove(tmp_filename)
@@ -371,7 +381,7 @@ if __name__ == '__main__':
             os.remove(output_file.name)
 
         # record elapsed time
-        if opt.verbosity >= 3:
+        if opt.verbosity or 0 >= 3:
             sys.stdout.flush()
             print_elapsed_time(start_export_time)
 

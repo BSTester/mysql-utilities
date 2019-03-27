@@ -1306,7 +1306,6 @@ class SQLTransformer(object):
                                          dest_sql_mode)
         q_dest_routine = quote_with_backticks(self.destination[_ROUTINE_NAME],
                                               dest_sql_mode)
-
         # build a list of the parts
         statement_parts = [
             # delimiter

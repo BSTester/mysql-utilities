@@ -146,6 +146,13 @@ def database_diff(server1_val, server2_val, db1, db2, options):
                                       db1, db2, options)
     in_both, in_db1, in_db2 = get_common_objects(server1, server2,
                                                  db1, db2, True, options)
+    
+    if len(in_db2) > 0 and options.get("difftype", None) == 'sql' and options.get("output", None) and options.get("output", '').endswith('.sql'):
+        with open('{}{}'.format(options.get("output"), '.miss'), 'a', encoding='utf8') as fp:
+            for items in in_db2:
+                if items[0] == 'TABLE':
+                    fp.write('{}.{}\n'.format(db2, items[1][0]))
+    
     in_both.sort()
     if (len(in_db1) > 0 or len(in_db2) > 0) and not force:
         return False

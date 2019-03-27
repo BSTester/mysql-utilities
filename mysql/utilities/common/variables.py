@@ -74,7 +74,7 @@ class Variables(dict):
         Returns list - matches or [] for no matches
         """
         result = []
-        for key, value in self.iteritems():
+        for key, value in self.items():
             if key.startswith(prefix):
                 result.append({key: value})
         return result
@@ -91,7 +91,7 @@ class Variables(dict):
             return
 
         var_list = [{'name': key, 'value': value}
-                    for key, value in self.iteritems()]
+                    for key, value in self.items()]
 
         print("\n")
         if not self:
@@ -131,6 +131,6 @@ class Variables(dict):
         """
         regex = re.compile(pattern)
 
-        for key, value in self.iteritems():
+        for key, value in self.items():
             if regex.match(key):
                 yield key, value

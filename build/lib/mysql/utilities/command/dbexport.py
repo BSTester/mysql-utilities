@@ -507,7 +507,7 @@ def _export_data(source, server_values, db_list, output_file, options):
         # Merge resulting temp files (if generated).
         for tmp_filename in tmp_files_list:
             if tmp_filename:
-                tmp_file = open(tmp_filename, 'r')
+                tmp_file = open(tmp_filename, 'r', encoding='utf8')
                 shutil.copyfileobj(tmp_file, output_file)
                 tmp_file.close()
                 os.remove(tmp_filename)
@@ -571,7 +571,7 @@ def _export_table_data(source_srv, table, output_file, options):
     if file_per_table:
         # Store result of table export to a separated file.
         file_name = _generate_tbl_filename(tbl_name, frmt)
-        outfile = open(file_name, "w+")
+        outfile = open(file_name, "w+", encoding='utf8')
         tempfile_used = False
     else:
         if output_file:
@@ -582,7 +582,7 @@ def _export_table_data(source_srv, table, output_file, options):
             # Store result in a temporary file (merged later).
             # Used by multiprocess export.
             tempfile_used = True
-            outfile = tempfile.NamedTemporaryFile(delete=False)
+            outfile = tempfile.NamedTemporaryFile(delete=False, mode='w+', encoding='utf8')
 
     message = "# Data for table {0}:".format(q_tbl_name)
     outfile.write("{0}\n".format(message))
@@ -791,7 +791,7 @@ def get_change_master_command(source, options):
     if rpl_filename:
         rpl_file = rpl_filename
         try:
-            rf = open(rpl_filename, "w")
+            rf = open(rpl_filename, "w", encoding='utf8')
         except:
             raise UtilError("File inaccessible or bad path: "
                             "{0}".format(rpl_filename))
@@ -902,7 +902,7 @@ def multiprocess_db_export_task(export_db_task):
     db_list = export_db_task.get('db_list')
     options = export_db_task.get('options')
     # Create temporay file to hold export data.
-    outfile = tempfile.NamedTemporaryFile(delete=False)
+    outfile = tempfile.NamedTemporaryFile(delete=False, mode='w+', encoding='utf8')
     # Execute export databases task.
     # NOTE: Must handle any exception here, because worker processes will not
     # propagate them to the main process.
@@ -1067,7 +1067,7 @@ def export_databases(server_values, db_list, output_file, options):
     if rpl_mode:
         rpl_info = get_change_master_command(source, options)
         if rpl_info[_RPL_FILE]:
-            rpl_file = open(rpl_info[_RPL_FILE], 'w')
+            rpl_file = open(rpl_info[_RPL_FILE], 'w', encoding='utf8')
         else:
             rpl_file = output_file
         write_commands(rpl_file, ["STOP SLAVE;"], options, True, rpl_cmt,

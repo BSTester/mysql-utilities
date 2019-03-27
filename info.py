@@ -178,7 +178,7 @@ INSTALL = {
 add_optional_resources('mysql', exclude=["tests"])
 
 if __name__ == "__main__":
-    for key, item in INSTALL.iteritems():
+    for key, item in INSTALL.items():
         print("--> {0}".format(key))
         print("      {0}".format(item))
         print

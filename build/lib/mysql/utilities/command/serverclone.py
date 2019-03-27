@@ -412,7 +412,7 @@ def clone_server(conn_val, options):
                                                           mysqld_path)]
 
         # build start command
-        for key, val in cmd.iteritems():
+        for key, val in cmd.items():
             if key in options_to_quote:
                 val = "{0}{1}{0}".format(quote_char, val)
             start_cmd_lst.append(val)

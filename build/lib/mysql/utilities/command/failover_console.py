@@ -550,7 +550,7 @@ class FailoverConsole(object):
         """
         # Only do something if warnings exist.
         if self.warnings_dic:
-            for msg in self.warnings_dic.itervalues():
+            for msg in self.warnings_dic.values():
                 print("WARNING: {0}".format(msg))
                 self.rows_printed += 1
 

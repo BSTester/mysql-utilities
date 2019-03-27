@@ -1426,7 +1426,7 @@ class FrmReader(object):
             'Creation Time': time.ctime(file_stats[stat.ST_CTIME]),
             'Mode': file_stats[stat.ST_MODE],
         }
-        for value, data in file_info.iteritems():
+        for value, data in file_info.items():
             print("#%22s : %s" % (value, data))
         print
 
@@ -1467,7 +1467,7 @@ class FrmReader(object):
             'frm File_Version': self.general_data['frm_file_ver'],
             'Def Partition Engine': def_part_eng,
         }
-        for value, data in table_info.iteritems():
+        for value, data in table_info.items():
             print("#%22s : %s" % (value, data))
         print
 

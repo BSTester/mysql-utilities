@@ -589,6 +589,19 @@ def add_exclude(parser, object_type="objects",
                       "Repeat the --exclude option for multiple exclusions."
                       "".format(object_type, example1, example2))
 
+def add_include(parser, object_type="objects",
+                example1="db1.t1", example2="db1.t% or db%.%"):
+    """Add the --include option.
+
+    parser[in]        the parser instance
+    example1[in]
+    example2[in]
+    """
+    parser.add_option("-i", "--include", action="append", dest="include",
+                      type="string", default=None, help="include one or more "
+                      "{0} from the operation using either a specific "
+                      "name (e.g. {1}), a LIKE pattern (e.g. {2})."
+                      "".format(object_type, example1, example2))
 
 def check_exclude_pattern(exclude_list, use_regexp):
     """Check the --exclude pattern to determine if there are special symbols

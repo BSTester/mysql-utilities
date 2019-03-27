@@ -137,7 +137,6 @@ def _get_objects(server, database, options):
     db_obj.init()
     db_objects = db_obj.objects
     db_objects.sort()
-
     return db_objects
 
 
@@ -421,7 +420,6 @@ def _get_transform(server1, server2, object1, object2, options,
 
     obj1 = db_1.get_object_definition(db1, name1, object_type)
     obj2 = db_2.get_object_definition(db2, name2, object_type)
-
     # Get the transformation based on direction.
     transform_str = []
     xform = SQLTransformer(db_1, db_2, obj1[0], obj2[0], object_type,

@@ -257,6 +257,7 @@ class Database(object):
         self.skip_create = options.get("skip_create", False)
         self.skip_data = options.get("skip_data", False)
         self.exclude_patterns = options.get("exclude_patterns", None)
+        self.include_patterns = options.get("include_patterns", None)
         self.use_regexp = options.get("use_regexp", False)
         self.skip_table_opts = options.get("skip_table_opts", False)
         self.new_db = None
@@ -1298,7 +1299,6 @@ class Database(object):
                 definition.append((basic_def, col_def, part_def))
             else:
                 definition.append(rows[0])
-
         return definition
 
     def get_next_object(self):
@@ -1350,7 +1350,41 @@ class Database(object):
                 # Append exclude condition to previous one(s).
                 string = "{0} AND {1} {2} {3}".format(string, exclude_param,
                                                       oper, obj2sql(value))
+        return string
 
+    def __build_include_patterns(self, include_param):
+        """Return a string to add to where clause to exclude objects.
+
+        This method will add the conditions to exclude objects based on
+        name if there is a dot notation or by a search pattern as specified
+        by the options.
+
+        include_param[in]  Name of column to check.
+
+        Returns (string) String to add to where clause or ""
+        """
+        oper = 'LIKE'
+        string = ""
+        for pattern in self.include_patterns:
+            # Check use of qualified object names (with backtick support).
+            if pattern.find(".") > 0:
+                use_backtick = is_quoted_with_backticks(pattern, self.sql_mode)
+                db, name = parse_object_name(pattern, self.sql_mode, True)
+                if use_backtick:
+                    # Remove backtick quotes.
+                    db = remove_backtick_quoting(db, self.sql_mode)
+                    name = remove_backtick_quoting(name, self.sql_mode)
+                if db == self.db_name:  # Check if database name matches.
+                    value = name  # Only use the object name to exclude.
+                else:
+                    value = pattern
+            # Otherwise directly use the specified pattern.
+            else:
+                value = pattern
+            if value:
+                # Append exclude condition to previous one(s).
+                string = "{0} {4} {1} {2} {3}".format(string, include_param,
+                                                      oper, obj2sql(value), 'OR' if string else 'AND')
         return string
 
     def get_object_type(self, object_name):
@@ -1700,7 +1734,9 @@ class Database(object):
                 sufix = _ORDER_BY_DEFAULT
             # Form exclusion string
             exclude_str = ""
-            if self.exclude_patterns:
+            if self.include_patterns:
+                exclude_str = self.__build_include_patterns(exclude_param)
+            elif self.exclude_patterns:
                 exclude_str = self.__build_exclude_patterns(exclude_param)
             query = (prefix + _OBJECT_QUERY + sufix) % (self.db_name,
                                                         exclude_str)

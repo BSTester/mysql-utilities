@@ -167,7 +167,7 @@ def _server_info(server_val, get_defaults=False, options=None):
     server_is_local = server.is_alias('localhost')
 
     # Get _LOG_FILES_VARIABLES values from the server
-    for msg, log_tpl in _LOG_FILES_VARIABLES.iteritems():
+    for msg, log_tpl in _LOG_FILES_VARIABLES.items():
         res = server.show_server_variable(log_tpl.log_name)
         if res:
             # Check if log is turned off

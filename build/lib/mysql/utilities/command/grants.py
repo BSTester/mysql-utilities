@@ -219,7 +219,7 @@ def check_grants(server_cnx_val, options, dict_of_objects):
                 elif options['show_mode'] == 'user_grants':
                     # Sort by grantee name
                     for grantee, priv_set in sorted(
-                            grantee_info_dict[obj_type][obj_name].iteritems()):
+                            grantee_info_dict[obj_type][obj_name].items()):
                         # print privileges sorted by name
                         print("# - {0} : {1}".format(
                             grantee, ", ".join(sorted(priv_set))))

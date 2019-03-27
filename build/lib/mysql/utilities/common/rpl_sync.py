@@ -680,7 +680,7 @@ class RPLSynchronizer(object):
                         gtid_sets_by_uuid[uuid] = union_set
 
             # Return union of all know executed GTID.
-            return ",".join(gtid_sets_by_uuid.itervalues())
+            return ",".join(gtid_sets_by_uuid.values())
 
     def _sync_slaves(self, slaves, gtid):
         """Set synchronization point (specified GTID set) for the given slaves.
